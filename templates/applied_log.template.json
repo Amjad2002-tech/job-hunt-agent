@@ -1,0 +1,22 @@
+[
+  {
+    "id": "[PLATFORM_JOB_ID]",
+    "platform": "[linkedin | bayt | company_site | ...]",
+    "title": "[JOB_TITLE]",
+    "company": "[COMPANY]",
+    "location": "[CITY, COUNTRY]",
+    "posted": "[YYYY-MM-DD]",
+    "link": "[JOB_URL]",
+    "apply_method": "[easy_apply | company_site | email]",
+    "score": 0,
+    "fit_note": "[ONE_HONEST_LINE]",
+    "expected_salary": null,
+    "status": "[Shortlisted | Draft saved | Ready for review | Applied | Apply yourself | Skipped | Interview | Offer | Rejected]",
+    "applied_on": "",
+    "reply": null,
+    "outreach": [],
+    "open_question": "",
+    "run": "[YYYY-MM-DD]",
+    "note": ""
+  }
+]

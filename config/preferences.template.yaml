@@ -1,0 +1,77 @@
+# Copy to my_data/preferences.yaml (job-hunt-setup does this for you).
+# Replace every [PLACEHOLDER]. Lists can be empty [].
+
+platforms:
+  # Pick from the keys in config/platforms.yaml, or use ["all"].
+  selected: [linkedin]            # e.g. [linkedin, bayt, gulftalent, naukrigulf, indeed]
+  company_portals:                 # extra careers pages to sweep (job-portal-sweep)
+    - name: "[COMPANY_OR_ENTITY_NAME]"
+      url: "[CAREERS_URL]"
+
+search:
+  countries: ["[COUNTRY]"]
+  cities: []                        # empty = whole country
+  remote_ok: false
+  posted_within_days: 7
+  target_titles:
+    - "[JOB_TITLE_1]"
+    - "[JOB_TITLE_2]"
+  extra_keywords: []                # skills or domains that raise the score
+  exclude_title_words: []           # e.g. ["intern", "manager", "director"]
+  exclude_companies: []             # e.g. your current employer
+  exclude_program_types: []         # e.g. ["Tamheer"] or ["internship"]
+  include_graduate_programs: true
+  max_years_required: 5             # skip postings asking for this many years or more
+  shortlist_size: 15
+
+candidate:
+  years_experience: [NUMBER]
+  seniority_levels_ok: [entry, associate, mid]   # entry | associate | mid | senior | manager | director | executive
+
+salary:
+  currency: "[CURRENCY]"            # e.g. SAR, AED, USD
+  current: "[AMOUNT_OR_Negotiable]"
+  current_numeric_fallback: [AMOUNT]   # used only when a field accepts numbers only
+  expected_scheme:                  # first matching rule wins
+    - match: "[e.g. large or government-backed companies]"
+      expected: [AMOUNT]
+    - match: "[e.g. analyst / specialist roles]"
+      expected: [AMOUNT]
+    - match: "default"
+      expected: [AMOUNT]
+  minimum_acceptable: [AMOUNT]      # offers below this go to you for a decision
+
+cv_review:                          # Step 0: cv-recruiter-review
+  enabled: true
+  tracks: ["[TRACK_1]", "[TRACK_2]"]  # e.g. ["PMO", "AI", "Automation", "Project Manager", "Product Manager"]
+  dropped_tracks: []                # tracks agreed to stop scoring
+  pass_mark: 70
+  live_cv_url: ""                   # optional live CV page (e.g. a FlowCV page); empty = newest file in my_data/cv/
+  block_search_if_no_track_passes: true
+
+documents:
+  cv_file: "my_data/cv/[YOUR_CV_FILE].pdf"
+  tailor_cv_per_job: false          # true = generate a tailored CV per job
+  cover_letter: none                # none | generic | tailored
+  file_name_stem: "[Firstname_Lastname]"
+  style_rules:                      # applied to anything generated
+    - "one page"
+    - "no em dashes"
+
+approval:
+  mode: review_first                # review_first | auto_submit_preapproved
+  auto_submit_rules: []             # used only with auto_submit_preapproved, e.g. ["easy_apply_only", "score>=80"]
+  consent_policy: ask               # ask | allow_required (tick required privacy/terms boxes, never marketing)
+
+outreach:
+  enabled: true
+  max_people_per_job: 2
+  language: "English"
+
+email_watch:
+  enabled: true
+  provider: gmail
+
+notifications:
+  channel: none                     # none | slack | email | push
+  slack_user_id: "[SLACK_USER_ID_OR_EMPTY]"

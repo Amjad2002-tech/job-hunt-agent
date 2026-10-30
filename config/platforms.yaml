@@ -1,0 +1,170 @@
+# Platform catalog. Shared knowledge, no personal data.
+# Each entry: what it covers, how to search, how applying works, and known quirks.
+# All browsing happens in the user's own signed-in Chrome via Claude in Chrome.
+# Be polite: about one request every 2 to 3 seconds, stop on HTTP 429 or a CAPTCHA.
+
+linkedin:
+  name: LinkedIn
+  regions: [global]
+  search:
+    method: in-page fetch from a linkedin.com tab
+    list_url: "/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords={q}&location={loc}&f_TPR=r{seconds}&start={offset}"
+    detail_url: "/jobs-guest/jobs/api/jobPosting/{id}"
+    filters:
+      posted_7_days: "f_TPR=r604800"
+      posted_30_days: "f_TPR=r2592000"
+      easy_apply_only: "f_AL=true"
+    notes:
+      - "Responses are HTML fragments that start with a doctype; parse cards with regex by splitting on '<li>' (DOMParser drops them)."
+      - "About 10 cards per page; page with start=0,10,20... Bursts return 429 or 'Failed to fetch'; slow down."
+      - "Tool output is truncated around 1,000 characters: write results into a <pre> in the page and read it with get_page_text."
+      - "Navigating wipes window variables: finish fetching before opening job pages."
+  already_applied_check: "Open /jobs/view/{id}/ signed in; skip if page text contains 'Application submitted'."
+  apply:
+    easy_apply: "Button labelled 'Easy Apply'. Modal: contact > resume > experience > education > questions > (consents) > Review > Submit."
+    external: "Link labelled 'Apply on company website' opens the employer ATS in a new tab; handle with that ATS entry below."
+    quirks:
+      - "Radio buttons need a real click; form_input on text fields is fine."
+      - "The saved resume list selects the most recent upload by default: confirm it is the right file."
+      - "Numeric-only fields reject text: use the numeric fallback from form_answers."
+      - "Closing the modal asks Save or Discard: choose Save to keep a draft."
+      - "Untick 'Follow company' before submitting unless the user wants it."
+      - "Verify submission by reloading the job page and checking for 'Application submitted'."
+  hiring_team: "Signed-in job page shows 'Meet the hiring team' and 'People you can reach out to'."
+
+indeed:
+  name: Indeed
+  regions: [global]
+  search: { method: "browser search page", url: "https://{country_subdomain}.indeed.com/jobs?q={q}&l={loc}&fromage={days}" }
+  apply: { notes: ["'Apply now' on Indeed uses the signed-in Indeed profile and resume.", "Many listings redirect to company sites."] }
+
+glassdoor:
+  name: Glassdoor
+  regions: [global]
+  search: { method: "browser search page", url: "https://www.glassdoor.com/Job/jobs.htm?sc.keyword={q}" }
+  notes: ["Also useful for salary ranges when building the expected-salary scheme."]
+
+wellfound:
+  name: Wellfound (AngelList Talent)
+  regions: [global, startups]
+  search: { method: "browser search page", url: "https://wellfound.com/jobs" }
+  apply: { notes: ["One-click apply with a short note; uses the signed-in profile."] }
+
+remote_boards:
+  name: Remote OK / We Work Remotely
+  regions: [remote]
+  search: { method: "public listing pages", urls: ["https://remoteok.com/remote-{q}-jobs", "https://weworkremotely.com/remote-jobs/search?term={q}"] }
+
+bayt:
+  name: Bayt
+  regions: [gcc, mena]
+  search: { method: "browser search page", url: "https://www.bayt.com/en/{country}/jobs/{q}-jobs/" }
+  apply: { notes: ["'Easy Apply' uses the Bayt CV saved in the signed-in account.", "Some jobs ask screening questions."] }
+
+gulftalent:
+  name: GulfTalent
+  regions: [gcc]
+  search: { method: "browser search page", url: "https://www.gulftalent.com/jobs/search?keyword={q}" }
+  apply: { notes: ["Apply uses the signed-in GulfTalent profile."] }
+
+naukrigulf:
+  name: Naukrigulf
+  regions: [gcc]
+  search: { method: "browser search page", url: "https://www.naukrigulf.com/{q}-jobs-in-{country}" }
+
+tanqeeb:
+  name: Tanqeeb
+  regions: [mena]
+  search: { method: "browser search page", url: "https://www.tanqeeb.com/jobs/search?keywords={q}" }
+  notes: ["Aggregator: usually links out to the source site."]
+
+jadarat:
+  name: Jadarat (Saudi national employment platform)
+  regions: [saudi_arabia]
+  search: { method: "browser, signed in", url: "https://jadarat.sa/ExploreJobs" }
+  notes:
+    - "Requires Nafath sign-in, which only the user can do. If not signed in, list it for the user."
+    - "Many ministries and authorities publish only here."
+
+ewdifh:
+  name: Ewdifh
+  regions: [saudi_arabia]
+  notes: ["News-style aggregator of Saudi announcements; always open the official source link before applying."]
+
+# ---------- Applicant tracking systems (employer sites) ----------
+greenhouse:
+  name: Greenhouse
+  detect: ["boards.greenhouse.io", "job-boards.greenhouse.io"]
+  search: { api: "https://boards-api.greenhouse.io/v1/boards/{company}/jobs" }
+  apply: { account: false, notes: ["Single form, resume upload, custom questions."] }
+
+lever:
+  name: Lever
+  detect: ["jobs.lever.co"]
+  search: { api: "https://api.lever.co/v0/postings/{company}?mode=json" }
+  apply: { account: false }
+
+ashby:
+  name: Ashby
+  detect: ["jobs.ashbyhq.com"]
+  search: { api: "https://api.ashbyhq.com/posting-api/job-board/{company}" }
+  apply: { account: false }
+
+smartrecruiters:
+  name: SmartRecruiters
+  detect: ["jobs.smartrecruiters.com"]
+  search: { api: "https://api.smartrecruiters.com/v1/companies/{company}/postings" }
+  apply: { account: false, notes: ["Often also offered as LinkedIn Easy Apply with a privacy-notice consent page."] }
+
+teamtailor:
+  name: Teamtailor
+  detect: ["teamtailor.com", "careers.{company}"]
+  apply:
+    account: false
+    notes:
+      - "Form at /jobs/{id}/applications/new."
+      - "Set values with the native value setter plus input events, click radios, tick only the required consent if allowed, then form.requestSubmit()."
+
+workable:
+  name: Workable
+  detect: ["apply.workable.com"]
+  apply: { account: false, notes: ["jobs.workable.com may show a bot check: stop and list for the user."] }
+
+workday:
+  name: Workday
+  detect: ["myworkdayjobs.com", "wd1", "wd3", "wd5"]
+  apply: { account: true, notes: ["Needs an account and password: the agent stops. User applies or signs in first, then the agent can fill the rest."] }
+
+successfactors:
+  name: SAP SuccessFactors
+  detect: ["successfactors", "hr.cloud.sap", "jobs.sap.com"]
+  apply:
+    account: true
+    notes:
+      - "Usually needs a candidate account. If the user is already signed in, the agent can fill and submit."
+      - "Open the job page and click the apply link; the direct /talentcommunity/apply URL may redirect home."
+      - "Dropdowns are combobox inputs: open them and click an option scoped to that list (id prefix of the input + 1)."
+      - "Screenshots may be blocked on some tenants: use find, read_page and page text instead."
+      - "Confirmation title reads like 'Successfully applied' or the local-language equivalent."
+
+oracle_taleo:
+  name: Oracle Recruiting / Taleo
+  detect: ["oraclecloud.com", "taleo.net"]
+  apply: { account: true }
+
+phenom:
+  name: Phenom career sites
+  detect: ["careers.{company}.com/.../job/", "phenom-feeds"]
+  apply: { account: varies, notes: ["Often hands off to Workday. Some have a no-account multi-step form that needs a privacy acknowledgement."] }
+
+velents:
+  name: Velents
+  detect: ["crm.velents.com"]
+  apply: { account: false, notes: ["Single page form with CV upload and screening dropdowns; confirmation page says the application was submitted."] }
+
+government_portals:
+  name: Government and entity career portals
+  notes:
+    - "Add each URL under platforms.company_portals in preferences.yaml."
+    - "Many run on SuccessFactors or Talentera. If a portal says 'no jobs', record that and move on."
+    - "Never enter national ID numbers or passwords for the user."
