@@ -1,0 +1,45 @@
+# ===== Personal data: never commit =====
+my_data/*
+!my_data/README.md
+!my_data/cv/
+!my_data/generated/
+!my_data/logs/
+my_data/cv/*
+my_data/generated/*
+my_data/logs/*
+!my_data/*/.gitkeep
+
+# Documents (only templates/ may hold office files)
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.csv
+!templates/*.xlsx
+!templates/*.csv
+
+# Screenshots and photos
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Claude local state
+.claude/settings.local.json
+.claude/projects/
+
+# OS / editor / python
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
