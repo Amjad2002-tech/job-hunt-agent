@@ -1,0 +1,18 @@
+name: privacy-check
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fail if any file under my_data/ is tracked
+        run: |
+          extra=$(git ls-files my_data | grep -v -E '^my_data/(README.md|cv/.gitkeep|generated/.gitkeep|logs/.gitkeep)$' || true)
+          if [ -n "$extra" ]; then echo "Private files tracked:"; echo "$extra"; exit 1; fi
+      - name: Scan for personal data
+        run: python3 scripts/check_no_personal_data.py --all
